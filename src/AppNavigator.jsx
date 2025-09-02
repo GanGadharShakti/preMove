@@ -2,29 +2,36 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {
-  createStackNavigator,
-  CardStyleInterpolators,
-} from '@react-navigation/stack';
+import { CardStyleInterpolators } from '@react-navigation/stack';
+
 import BottomTabs from './navigation/BottomTabs';
-import SplashScreen from '../src/screens/SplashScreen';
-import AddressBar from './components/AddressBar';
+import SplashScreen from './screens/SplashScreen';
+import Additem from './screens/AddItem';
+import LoginPage from './screens/LoginPage';
+import OtpScreen from './screens/OtpScreen'; // 👈 Create this file like I shared before
+
 const Stack = createNativeStackNavigator();
+
 const AppNavigator = () => (
   <NavigationContainer>
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {/* 👇 First show splash */}
+      {/* Splash first */}
       <Stack.Screen name="Splash" component={SplashScreen} />
 
-      {/* 👇 Then show your BottomTabs (unchanged) */}
-      
+      {/* Login Flow */}
+      <Stack.Screen name="MainTabs" component={LoginPage} />
+      <Stack.Screen name="Otp" component={OtpScreen} />
+
+      {/* After login success → go to HomePage (BottomTabs) */}
       <Stack.Screen
-        name="MainTabs"
+        name="HomePage"
         component={BottomTabs}
         options={{
           cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
         }}
       />
+
+      <Stack.Screen name="AddItem" component={Additem} />
     </Stack.Navigator>
   </NavigationContainer>
 );

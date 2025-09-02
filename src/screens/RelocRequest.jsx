@@ -1,5 +1,5 @@
 // src/screens/RelocationRequestScreen.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,24 +9,27 @@ import {
   TouchableOpacity,
   Platform,
   PermissionsAndroid,
-} from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import Geolocation from "react-native-geolocation-service";
-import colors from "../theme/colors";
-import {InventoryScreenCss, RelocRequestScreenCss} from "../assets/css/components";
-import GradientText from "../components/GradientText";
+} from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import Geolocation from 'react-native-geolocation-service';
+import colors from '../theme/colors';
+import {
+  RelocRequestScreenCss,
+} from '../assets/css/ScreensCss';
+import GradientText from '../components/GradientText';
+import { useNavigation } from '@react-navigation/native';
 
 const RelocRequest = () => {
   const [form, setForm] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    service: "",
-    moveType: "",
-    fromCity: "",
-    toCity: "",
+    fullName: '',
+    email: '',
+    phone: '',
+    service: '',
+    moveType: '',
+    fromCity: '',
+    toCity: '',
     moveDate: new Date(),
-    homeSize: "",
+    homeSize: '',
   });
 
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -39,46 +42,46 @@ const RelocRequest = () => {
   // 🔹 Handle date picker
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || form.moveDate;
-    setShowDatePicker(Platform.OS === "ios");
-    handleChange("moveDate", currentDate);
+    setShowDatePicker(Platform.OS === 'ios');
+    handleChange('moveDate', currentDate);
   };
 
   // 🔹 Ask for location permission
   const requestLocationPermission = async () => {
     try {
-      if (Platform.OS === "android") {
+      if (Platform.OS === 'android') {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
-            title: "Location Permission",
-            message: "We need access to your location to auto-fill pickup city",
-            buttonNeutral: "Ask Me Later",
-            buttonNegative: "Cancel",
-            buttonPositive: "OK",
-          }
+            title: 'Location Permission',
+            message: 'We need access to your location to auto-fill pickup city',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           getCurrentLocation();
         } else {
-          console.log("Location permission denied");
+          console.log('Location permission denied');
         }
       } else {
-        const auth = await Geolocation.requestAuthorization("whenInUse");
-        if (auth === "granted") {
+        const auth = await Geolocation.requestAuthorization('whenInUse');
+        if (auth === 'granted') {
           getCurrentLocation();
         }
       }
     } catch (err) {
-      console.warn("Permission error:", err);
+      console.warn('Permission error:', err);
     }
   };
 
   // 🔹 Get current location (lat/lng) and fetch city name from Nominatim API
   const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
-      async (pos) => {
+      async pos => {
         const { latitude, longitude } = pos.coords;
-        console.log("Lat/Lng:", latitude, longitude);
+        console.log('Lat/Lng:', latitude, longitude);
 
         try {
           // 🌍 Using OpenStreetMap Nominatim API
@@ -86,9 +89,9 @@ const RelocRequest = () => {
             `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
             {
               headers: {
-                "User-Agent": "PreMoveApp/1.0 (your-email@example.com)", // Nominatim requires this
+                'User-Agent': 'PreMoveApp/1.0 (your-email@example.com)', // Nominatim requires this
               },
-            }
+            },
           );
           const data = await response.json();
 
@@ -102,17 +105,17 @@ const RelocRequest = () => {
               data.address.country; // multiple fallbacks
 
             if (city) {
-              handleChange("fromCity", city);
+              handleChange('fromCity', city);
             }
           }
         } catch (error) {
-          console.log("Error fetching city:", error);
+          console.log('Error fetching city:', error);
         }
       },
-      (error) => {
-        console.log("Location error:", error.message);
+      error => {
+        console.log('Location error:', error.message);
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
   };
 
@@ -121,11 +124,19 @@ const RelocRequest = () => {
     requestLocationPermission();
   }, []);
 
+  const navigation = useNavigation();
+
   return (
-    <ScrollView style={RelocRequestScreenCss.container} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={RelocRequestScreenCss.container}
+      showsVerticalScrollIndicator={false}
+    >
       {/* Header */}
       {/* <Text style={RelocRequestScreenCss.header}>PreMove</Text> */}
-      <GradientText text="Relocation Request" style={RelocRequestScreenCss.title} />
+      <GradientText
+        text="Relocation Request"
+        style={RelocRequestScreenCss.title}
+      />
 
       {/* Form Fields */}
       <View style={RelocRequestScreenCss.form}>
@@ -134,7 +145,7 @@ const RelocRequest = () => {
           style={RelocRequestScreenCss.input}
           placeholder="Enter full name"
           value={form.fullName}
-          onChangeText={(text) => handleChange("fullName", text)}
+          onChangeText={text => handleChange('fullName', text)}
         />
 
         <Text style={RelocRequestScreenCss.label}>Email</Text>
@@ -143,7 +154,7 @@ const RelocRequest = () => {
           placeholder="Enter email"
           keyboardType="email-address"
           value={form.email}
-          onChangeText={(text) => handleChange("email", text)}
+          onChangeText={text => handleChange('email', text)}
         />
 
         <Text style={RelocRequestScreenCss.label}>Phone number</Text>
@@ -156,7 +167,7 @@ const RelocRequest = () => {
             placeholder="Phone number"
             keyboardType="phone-pad"
             value={form.phone}
-            onChangeText={(text) => handleChange("phone", text)}
+            onChangeText={text => handleChange('phone', text)}
           />
         </View>
 
@@ -165,7 +176,7 @@ const RelocRequest = () => {
           style={RelocRequestScreenCss.input}
           placeholder="Enter services"
           value={form.service}
-          onChangeText={(text) => handleChange("service", text)}
+          onChangeText={text => handleChange('service', text)}
         />
 
         <Text style={RelocRequestScreenCss.label}>Select Move Type</Text>
@@ -173,23 +184,23 @@ const RelocRequest = () => {
           style={RelocRequestScreenCss.input}
           placeholder="Enter move type"
           value={form.moveType}
-          onChangeText={(text) => handleChange("moveType", text)}
+          onChangeText={text => handleChange('moveType', text)}
         />
 
-        <Text style={RelocRequestScreenCss.label}>From City</Text>
+        <Text style={RelocRequestScreenCss.label}>Pick Up Location</Text>
         <TextInput
           style={RelocRequestScreenCss.input}
-          placeholder="Enter from city"
+          placeholder="Enter Pick Up Location"
           value={form.fromCity}
-          onChangeText={(text) => handleChange("fromCity", text)}
+          onChangeText={text => handleChange('fromCity', text)}
         />
 
-        <Text style={RelocRequestScreenCss.label}>To City</Text>
+        <Text style={RelocRequestScreenCss.label}>Drop Location</Text>
         <TextInput
           style={RelocRequestScreenCss.input}
-          placeholder="Enter to city"
+          placeholder="Enter Drop Location"
           value={form.toCity}
-          onChangeText={(text) => handleChange("toCity", text)}
+          onChangeText={text => handleChange('toCity', text)}
         />
 
         {/* Date Picker */}
@@ -198,10 +209,10 @@ const RelocRequest = () => {
           style={RelocRequestScreenCss.input}
           onPress={() => setShowDatePicker(true)}
         >
-          <Text style={{ color: form.moveDate ? "#000" : "#aaa" }}>
+          <Text style={{ color: form.moveDate ? '#000' : '#aaa' }}>
             {form.moveDate
               ? form.moveDate.toDateString()
-              : "Select moving date"}
+              : 'Select moving date'}
           </Text>
         </TouchableOpacity>
         {showDatePicker && (
@@ -219,11 +230,14 @@ const RelocRequest = () => {
           style={RelocRequestScreenCss.input}
           placeholder="e.g. 2 BHK / 3 BHK / Villa"
           value={form.homeSize}
-          onChangeText={(text) => handleChange("homeSize", text)}
+          onChangeText={text => handleChange('homeSize', text)}
         />
 
         {/* Submit Button */}
-        <TouchableOpacity style={RelocRequestScreenCss.button}>
+        <TouchableOpacity
+          style={RelocRequestScreenCss.button}
+          onPress={() => navigation.navigate('AddItem')}
+        >
           <Text style={RelocRequestScreenCss.buttonText}>Submit Request</Text>
         </TouchableOpacity>
       </View>

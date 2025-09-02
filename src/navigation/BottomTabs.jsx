@@ -17,6 +17,7 @@ import RelocRequest from '../screens/RelocRequest';
 import Inventory from '../screens/Inventory';
 import Quote from '../screens/Quote';
 import Account from '../screens/Account';
+import AddItem from '../screens/AddItem';
 import { StyleSheet, View } from 'react-native';
 import AddressBar from '../components/AddressBar';
 

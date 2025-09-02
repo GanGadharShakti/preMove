@@ -1,33 +1,6 @@
 import colors from '../../theme/colors';
 import { StyleSheet } from 'react-native';
 
-export const InventoryItem = StyleSheet.create({
-  card: {
-    width: '45%',
-    height: '55%',
-    backgroundColor: colors.white,
-    borderRadius: 14,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    position: 'relative',
-  },
-  img: {
-    width: 100,
-    height: 64,
-    right: 0,
-    bottom: 0,
-    marginBottom: 8,
-    position: 'absolute',
-  },
-  title: {
-    textAlign: 'left',
-    fontWeight: '700',
-    fontSize: 20,
-    color: colors.text,
-  },
-});
-
 export const InventoryScreenCss = StyleSheet.create({
   container: { flex: 1, padding: 5 },
   title: {
@@ -156,7 +129,7 @@ export const AdditemScreenCss = StyleSheet.create({
     borderRadius: 100,
     fontSize: 20,
   },
-  row: { flexDirection: 'row', alignItems: 'center',  },
+  row: { flexDirection: 'row', alignItems: 'center' },
   input: {
     flex: 1,
     borderWidth: 1,
@@ -197,4 +170,38 @@ export const AdditemScreenCss = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 10,
   },
+});
+
+export const LoginScreenCss = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  logo: { width: 180, height: 120, marginBottom: 30 },
+  loginText: { fontSize: 16, fontWeight: '600', marginBottom: 15 },
+  inputContainer: {
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: 8,
+    padding: 10,
+    width: '100%',
+    marginBottom: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  countryCode: { fontSize: 16, marginRight: 10 },
+  input: { flex: 1, fontSize: 16 },
+  note: { fontSize: 12, color: '#777', marginBottom: 20 },
+  button: {
+    backgroundColor: '#00b894',
+    paddingVertical: 15,
+    borderRadius: 8,
+    width: '100%',
+    alignItems: 'center',
+  },
+  buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 });
