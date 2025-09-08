@@ -143,6 +143,7 @@ const RelocRequest = () => {
         <TextInput
           style={RelocRequestScreenCss.input}
           placeholder="Enter full name"
+          placeholderTextColor={colors.muted}
           value={form.fullName}
           onChangeText={text => handleChange('fullName', text)}
         />
@@ -152,6 +153,7 @@ const RelocRequest = () => {
           style={RelocRequestScreenCss.input}
           placeholder="Enter email"
           keyboardType="email-address"
+          placeholderTextColor={colors.muted}
           value={form.email}
           onChangeText={text => handleChange('email', text)}
         />
@@ -165,6 +167,7 @@ const RelocRequest = () => {
             style={[RelocRequestScreenCss.input, { flex: 1 }]}
             placeholder="Phone number"
             keyboardType="phone-pad"
+            placeholderTextColor={colors.muted}
             value={form.phone}
             onChangeText={text => handleChange('phone', text)}
           />
@@ -174,6 +177,7 @@ const RelocRequest = () => {
         <TextInput
           style={RelocRequestScreenCss.input}
           placeholder="Enter services"
+          placeholderTextColor={colors.muted}
           value={form.service}
           onChangeText={text => handleChange('service', text)}
         />
@@ -182,6 +186,7 @@ const RelocRequest = () => {
         <TextInput
           style={RelocRequestScreenCss.input}
           placeholder="Enter move type"
+          placeholderTextColor={colors.muted}
           value={form.moveType}
           onChangeText={text => handleChange('moveType', text)}
         />
@@ -190,6 +195,7 @@ const RelocRequest = () => {
         <TextInput
           style={RelocRequestScreenCss.input}
           placeholder="Enter Pick Up Location"
+          placeholderTextColor={colors.muted}
           value={form.fromCity}
           onChangeText={text => handleChange('fromCity', text)}
         />
@@ -198,6 +204,7 @@ const RelocRequest = () => {
         <TextInput
           style={RelocRequestScreenCss.input}
           placeholder="Enter Drop Location"
+          placeholderTextColor={colors.muted}
           value={form.toCity}
           onChangeText={text => handleChange('toCity', text)}
         />
@@ -228,6 +235,7 @@ const RelocRequest = () => {
         <TextInput
           style={RelocRequestScreenCss.input}
           placeholder="e.g. 2 BHK / 3 BHK / Villa"
+          placeholderTextColor={colors.muted}
           value={form.homeSize}
           onChangeText={text => handleChange('homeSize', text)}
         />

@@ -44,7 +44,7 @@ export const RelocRequestScreenCss = StyleSheet.create({
     color: '#03B5A7',
   },
   form: {
-    marginVertical: 50,
+    marginVertical: 20,
   },
   label: {
     fontSize: 14,
@@ -253,8 +253,10 @@ export const AddItemCss = StyleSheet.create({
   },
   categoryWrapper: {
     width: '100%',
-    marginVertical:10
+    marginVertical: 10,
     // height: '10%',
+    paddingHorizontal:10
+  
   },
   listWrapper: {
     width: '100%',
@@ -262,7 +264,7 @@ export const AddItemCss = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop:10,
+    marginTop: 10,
   },
   card: {
     flex: 1,
@@ -313,5 +315,32 @@ export const AddItemCss = StyleSheet.create({
     color: colors.white,
     fontWeight: 'bold',
     fontSize: 18,
+  },
+  searchwrap:{
+    width:'100%',
+    justifyContent:'center',
+    alignItems:'center',
+    paddingVertical:10
+  },
+  searchContainer: {
+    width: '90%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginHorizontal: 15,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    height: 45,
+  },
+  icon: {
+    marginRight: 8,
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    color: 'black',
   },
 });

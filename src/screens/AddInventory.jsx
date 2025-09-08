@@ -1,19 +1,49 @@
-import { View, Text, Image, FlatList, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  FlatList,
+  TouchableOpacity,
+  TextInput,
+} from 'react-native';
+import React, { useEffect, useState } from 'react';
 import ItemCategory from '../components/ItemCategory';
 import Header from '../components/Header';
 import { AddItemCss } from '../assets/css/ScreensCss';
 import LinearGradient from 'react-native-linear-gradient';
-
+import { MagnifyingGlassIcon } from 'react-native-heroicons/solid';
+import colors from '../theme/colors';
 const AddInventory = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [items, setItems] = useState([]); // ✅ items from API
+  const [items, setItems] = useState([]);
   const [quantities, setQuantities] = useState({});
+  const [search, setSearch] = useState(''); // 🔍 search text
 
-  // ✅ Jab category select hoti hai → items fetch karna
+  // ✅ Load all items on mount
+  useEffect(() => {
+    fetchAllItems();
+  }, []);
+
+  const fetchAllItems = async () => {
+    try {
+      const res = await fetch('http://192.168.0.155:5000/api/all-items');
+      const data = await res.json();
+      setItems(data);
+    } catch (error) {
+      console.error('❌ Error fetching all items:', error);
+    }
+  };
+
   const fetchItems = async categoryId => {
     try {
       setSelectedCategory(categoryId);
+
+      if (!categoryId) {
+        // "All" selected
+        fetchAllItems();
+        return;
+      }
+
       const res = await fetch(
         `http://192.168.0.155:5000/api/sub-category-items/${categoryId}`,
       );
@@ -38,23 +68,44 @@ const AddInventory = () => {
     }));
   };
 
+  // ✅ Filter items by search text
+  const filteredItems = items.filter(item =>
+    item.sub_category_item_name.toLowerCase().includes(search.toLowerCase()),
+  );
+
   return (
     <>
       <View style={AddItemCss.container}>
-        {/* Header */}
         <View style={AddItemCss.headerWrapper}>
           <Header />
         </View>
 
-        {/* Category selector */}
+        {/* 🔍 Search Bar */}
+        <View style={AddItemCss.searchwrap}>
+          <View style={AddItemCss.searchContainer}>
+            <MagnifyingGlassIcon
+              name="search-outline"
+              size={20}
+              color="#555"
+              style={AddItemCss.icon}
+            />
+            <TextInput
+              placeholder="Search items..."
+              value={search}
+              onChangeText={setSearch}
+              style={AddItemCss.input}
+              placeholderTextColor={colors.muted}
+            />
+          </View>
+        </View>
+
         <View style={AddItemCss.categoryWrapper}>
           <ItemCategory onSelect={fetchItems} />
         </View>
 
-        {/* Items of selected category */}
         <View style={AddItemCss.listWrapper}>
           <FlatList
-            data={items}
+            data={filteredItems}
             keyExtractor={item => item.id.toString()}
             numColumns={3}
             renderItem={({ item }) => (
@@ -69,7 +120,6 @@ const AddInventory = () => {
                   {item.sub_category_item_name}
                 </Text>
 
-                {/* Quantity Controls */}
                 <View style={AddItemCss.quantityWrapper}>
                   <TouchableOpacity onPress={() => increaseQuantity(item.id)}>
                     <Text style={AddItemCss.quantityBtn}>+</Text>
@@ -89,7 +139,6 @@ const AddInventory = () => {
         </View>
       </View>
 
-      {/* Add Button */}
       <TouchableOpacity style={AddItemCss.addBtn}>
         <LinearGradient
           colors={['#03B5A7', '#0189D5']}
