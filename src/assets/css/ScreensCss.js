@@ -253,13 +253,16 @@ export const AddItemCss = StyleSheet.create({
   },
   categoryWrapper: {
     width: '100%',
-    height: '10%',
+    marginVertical:10
+    // height: '10%',
   },
   listWrapper: {
     width: '100%',
+    height: 580,
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop:10,
   },
   card: {
     flex: 1,

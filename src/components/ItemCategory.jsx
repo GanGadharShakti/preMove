@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,9 +6,9 @@ import {
   ScrollView,
   StyleSheet,
   Image,
-} from "react-native";
-import colors from "../theme/colors";
-import LinearGradient from "react-native-linear-gradient";
+} from 'react-native';
+import colors from '../theme/colors';
+import LinearGradient from 'react-native-linear-gradient';
 
 export default function ItemCategory({ onSelect }) {
   const [categories, setCategories] = useState([]);
@@ -16,10 +16,10 @@ export default function ItemCategory({ onSelect }) {
 
   // ✅ Backend se categories fetch karna
   useEffect(() => {
-    fetch("http://localhost:5000/api/categories") // Android Emulator: 10.0.2.2 , Real Device: http://your-ip:5000
+    fetch('http://192.168.0.155:5000/api/categories') // Android Emulator: 10.0.2.2 , Real Device: http://your-ip:5000
       .then(res => res.json())
       .then(data => setCategories(data))
-      .catch(err => console.error("❌ Error fetching categories:", err));
+      .catch(err => console.error('❌ Error fetching categories:', err));
   }, []);
 
   const handleSelect = id => {
@@ -29,35 +29,45 @@ export default function ItemCategory({ onSelect }) {
 
   return (
     <View style={styles.container}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scrollContainer}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.scrollContainer}
+      >
         {categories.map(cat => (
           <TouchableOpacity
             key={cat.id}
             onPress={() => handleSelect(cat.id)}
-            style={{ borderRadius: 20, overflow: "hidden" }}
+            style={{ borderRadius: 20, overflow: 'hidden' }}
           >
             {selected === cat.id ? (
               <LinearGradient
-                colors={["#03B5A7", "#0189D5"]}
+                colors={['#03B5A7', '#0189D5']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.categoryBox}
               >
-                <Image
-                  source={{ uri: cat.category_image }}
+                {/* <Image
+                  source={{
+                    uri: `https://res.cloudinary.com/dfqledkbu/image/upload/premove_inventory/${cat.category_image}`,
+                  }}
                   style={styles.icon}
-                />
+                  defaultSource={require('../assets/placeholder.png')} // ✅ fallback image
+                /> */}
                 <Text style={[styles.categoryText, styles.activeText]}>
-                  {cat.categoryname}
+                  {cat.sub_category_name}
                 </Text>
               </LinearGradient>
             ) : (
               <View style={styles.categoryBox}>
-                <Image
-                  source={{ uri: cat.category_image }}
+                {/* <Image
+                  source={{
+                    uri: `https://res.cloudinary.com/dfqledkbu/image/upload/premove_inventory/${cat.category_image}`,
+                  }}
                   style={styles.icon}
-                />
-                <Text style={styles.categoryText}>{cat.categoryname}</Text>
+                  defaultSource={require('../assets/placeholder.png')} // ✅ fallback image
+                /> */}
+                <Text style={styles.categoryText}>{cat.sub_category_name}</Text>
               </View>
             )}
           </TouchableOpacity>
@@ -68,17 +78,18 @@ export default function ItemCategory({ onSelect }) {
 }
 
 const styles = StyleSheet.create({
-  scrollContainer: { marginVertical: 10, paddingHorizontal: 5 },
+  scrollContainer: { paddingHorizontal: 5 },
   categoryBox: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 15,
+    gap: 10,
     paddingVertical: 8,
     marginHorizontal: 5,
     borderRadius: 20,
-    backgroundColor: "#ffffff",
+    backgroundColor: '#ffffff',
   },
-  categoryText: { color: "#333", fontSize: 14 },
-  activeText: { color: "#fff", fontWeight: "bold" },
-  icon: { width: 20, height: 20, marginRight: 8 },
+  categoryText: { color: '#333', fontSize: 14, textAlign: 'center' },
+  activeText: { color: '#fff', fontWeight: 'bold' },
+  icon: { width: 20, height: 20, marginRight: 8, borderRadius: 4 },
 });

@@ -2,26 +2,27 @@ import { View, Text, Image, FlatList, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import ItemCategory from '../components/ItemCategory';
 import Header from '../components/Header';
-import data from '../assets/images/categories';
 import { AddItemCss } from '../assets/css/ScreensCss';
 import LinearGradient from 'react-native-linear-gradient';
 
-const categories = [
-  { id: 'Boxes', name: 'Boxes' },
-  { id: 'LivingRoom', name: 'Living Room' },
-  { id: 'Bedroom', name: 'Bedroom' },
-  { id: 'DiningRoom', name: 'Dining Room' },
-  { id: 'Kitchen', name: 'Kitchen' },
-  { id: 'KidsRoom', name: 'Kids Room' },
-  { id: 'Office', name: 'Office' },
-  { id: 'Outdoor', name: 'Outdoor' },
-  { id: 'Vehicles', name: 'Vehicles' },
-  { id: 'Other', name: 'Other' },
-];
-
 const AddInventory = () => {
-  const [selectedCategory, setSelectedCategory] = useState('Boxes');
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [items, setItems] = useState([]); // ✅ items from API
   const [quantities, setQuantities] = useState({});
+
+  // ✅ Jab category select hoti hai → items fetch karna
+  const fetchItems = async categoryId => {
+    try {
+      setSelectedCategory(categoryId);
+      const res = await fetch(
+        `http://192.168.0.155:5000/api/sub-category-items/${categoryId}`,
+      );
+      const data = await res.json();
+      setItems(data);
+    } catch (error) {
+      console.error('❌ Error fetching items:', error);
+    }
+  };
 
   const increaseQuantity = id => {
     setQuantities(prev => ({
@@ -47,25 +48,26 @@ const AddInventory = () => {
 
         {/* Category selector */}
         <View style={AddItemCss.categoryWrapper}>
-          <ItemCategory
-            categories={categories}
-            onSelect={id => setSelectedCategory(id)}
-          />
+          <ItemCategory onSelect={fetchItems} />
         </View>
 
         {/* Items of selected category */}
         <View style={AddItemCss.listWrapper}>
           <FlatList
-            data={data[selectedCategory] || []}
+            data={items}
             keyExtractor={item => item.id.toString()}
             numColumns={3}
             renderItem={({ item }) => (
               <View style={AddItemCss.card}>
                 <Image
-                  source={{ uri: item.image }}
+                  source={{
+                    uri: `https://res.cloudinary.com/dfqledkbu/image/upload/premove_inventory/${item.sub_category_item_image}`,
+                  }}
                   style={AddItemCss.itemImage}
                 />
-                <Text style={AddItemCss.itemName}>{item.name}</Text>
+                <Text style={AddItemCss.itemName}>
+                  {item.sub_category_item_name}
+                </Text>
 
                 {/* Quantity Controls */}
                 <View style={AddItemCss.quantityWrapper}>
@@ -90,7 +92,7 @@ const AddInventory = () => {
       {/* Add Button */}
       <TouchableOpacity style={AddItemCss.addBtn}>
         <LinearGradient
-          colors={['#03B5A7', '#0189D5']} // 👈 yahan apna gradient colors daalna
+          colors={['#03B5A7', '#0189D5']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={AddItemCss.addBtn}
