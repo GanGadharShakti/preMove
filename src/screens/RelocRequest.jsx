@@ -13,11 +13,10 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Geolocation from 'react-native-geolocation-service';
 import colors from '../theme/colors';
-import {
-  RelocRequestScreenCss,
-} from '../assets/css/ScreensCss';
+import { RelocRequestScreenCss } from '../assets/css/ScreensCss';
 import GradientText from '../components/GradientText';
 import { useNavigation } from '@react-navigation/native';
+import GradientBackground from '../components/GradientBackground';
 
 const RelocRequest = () => {
   const [form, setForm] = useState({
@@ -234,11 +233,10 @@ const RelocRequest = () => {
         />
 
         {/* Submit Button */}
-        <TouchableOpacity
-          style={RelocRequestScreenCss.button}
-          onPress={() => navigation.navigate('AddItem')}
-        >
-          <Text style={RelocRequestScreenCss.buttonText}>Submit Request</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('AddItem')}>
+          <GradientBackground style={RelocRequestScreenCss.button}>
+            <Text style={RelocRequestScreenCss.buttonText}>Submit Request</Text>
+          </GradientBackground>
         </TouchableOpacity>
       </View>
     </ScrollView>

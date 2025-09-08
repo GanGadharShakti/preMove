@@ -205,3 +205,110 @@ export const LoginScreenCss = StyleSheet.create({
   },
   buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 });
+export const AccountScreenCss = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#fff' },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    marginHorizontal: 16,
+    paddingVertical: 20,
+    elevation: 3,
+    // justifyContent:'space-evenly'
+  },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    // justifyContent:'space-between',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    // borderBottomWidth: 1,
+    // borderBottomColor: '#eee',
+  },
+  textBox: { marginLeft: 12, flex: 1 },
+  itemTitle: { fontSize: 16, fontWeight: '600', color: '#000' },
+  itemDesc: { fontSize: 13, color: '#666', marginTop: 2 },
+  logoutBtn: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: 'red',
+    paddingVertical: 12,
+    margin: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  logoutText: { color: 'red', fontSize: 16, fontWeight: '600' },
+  version: {
+    textAlign: 'center',
+    color: '#888',
+    marginBottom: 15,
+    fontSize: 12,
+  },
+});
+export const AddItemCss = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  headerWrapper: {
+    marginBottom: 10,
+  },
+  categoryWrapper: {
+    width: '100%',
+    height: '10%',
+  },
+  listWrapper: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+  },
+  card: {
+    flex: 1,
+    alignItems: 'center',
+    margin: 8,
+    backgroundColor: colors.white,
+    paddingVertical: 15,
+    borderRadius: 10,
+    gap: 10,
+  },
+  itemImage: {
+    width: 100,
+    height: 100,
+  },
+  itemName: {
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
+  quantityWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+    gap: 10,
+  },
+  quantityBtn: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    backgroundColor: colors.white,
+    paddingHorizontal: 10,
+    borderRadius: 20,
+    elevation: 5,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+  },
+  quantityText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  addBtn: {
+    width: '100%',
+    height: 50,
+    backgroundColor: colors.primary,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  addBtnText: {
+    color: colors.white,
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+});

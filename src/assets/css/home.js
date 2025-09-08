@@ -1,6 +1,6 @@
 // src/screens/HomeScreen.styles.js
 import { StyleSheet } from 'react-native';
-import colors from "../../theme/colors";
+import colors from '../../theme/colors';
 
 // Home page css
 
@@ -101,12 +101,13 @@ export default StyleSheet.create({
   footer: {
     marginTop: 20,
     marginBottom: 10,
-    fontSize: 15,
+    fontSize: 25,
     color: colors.primary,
+    fontFamily: '',
     fontWeight: 'bold',
+
   },
 });
 // Home page css close
 
-
-// 
+//

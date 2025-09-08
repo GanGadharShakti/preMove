@@ -8,6 +8,7 @@ import { BoltIcon, HandThumbUpIcon } from 'react-native-heroicons/solid';
 import logo from '../assets/images/Logo.png';
 import styles from '../assets/css/home';
 import { useNavigation } from '@react-navigation/native';
+import GradientText from '../components/GradientText';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -30,7 +31,9 @@ const HomeScreen = () => {
       <TouchableOpacity onPress={() => navigation.navigate('Reloc Req')}>
         <View style={styles.textFlas}>
           <BoltIcon color="#03B5A7" size={20} />
-          <Text style={{ color: colors.primary, fontSize: 12, fontWeight: '500' }}>
+          <Text
+            style={{ color: colors.primary, fontSize: 12, fontWeight: '500' }}
+          >
             <Text style={{ color: colors.primary, fontWeight: '900' }}>
               {'Relocation-help '}
             </Text>
@@ -41,9 +44,17 @@ const HomeScreen = () => {
 
       {/* Live info */}
       <View style={styles.live}>
-        <View style={{ justifyContent: 'center', flexDirection: 'row', alignItems: 'center' }}>
+        <View
+          style={{
+            justifyContent: 'center',
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
           <Text>We are currently </Text>
-          <Text style={{ color: colors.primary, fontWeight: '700' }}>live in</Text>
+          <Text style={{ color: colors.primary, fontWeight: '700' }}>
+            live in
+          </Text>
         </View>
       </View>
 
@@ -51,7 +62,8 @@ const HomeScreen = () => {
       <View style={styles.citiescontainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <Text style={styles.cities}>
-            PUNE · BANGALORE · NOIDA · HYDERABAD · DELHI · MUMBAI · CHENNAI · KOLKATA
+            PUNE · BANGALORE · NOIDA · HYDERABAD · DELHI · MUMBAI · CHENNAI ·
+            KOLKATA
           </Text>
         </ScrollView>
       </View>
@@ -97,7 +109,8 @@ const HomeScreen = () => {
             source={require('../assets/images/unpack.png')}
           />
         </View>
-        <Text style={styles.footer}>Packers and movers in India</Text>
+        <GradientText text={"Packers and movers in India"} style={styles.footer}>
+        </GradientText>
       </View>
     </ScrollView>
   );

@@ -6,7 +6,7 @@ import { CardStyleInterpolators } from '@react-navigation/stack';
 
 import BottomTabs from './navigation/BottomTabs';
 import SplashScreen from './screens/SplashScreen';
-import Additem from './screens/AddItem';
+import Additem from './screens/AddInventory';
 import LoginPage from './screens/LoginPage';
 import OtpScreen from './screens/OtpScreen'; // 👈 Create this file like I shared before
 
@@ -19,12 +19,12 @@ const AppNavigator = () => (
       <Stack.Screen name="Splash" component={SplashScreen} />
 
       {/* Login Flow */}
-      <Stack.Screen name="MainTabs" component={LoginPage} />
+      <Stack.Screen name="MainsTabs" component={LoginPage} />
       <Stack.Screen name="Otp" component={OtpScreen} />
 
       {/* After login success → go to HomePage (BottomTabs) */}
       <Stack.Screen
-        name="HomePage"
+        name="MainTabs"
         component={BottomTabs}
         options={{
           cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,

@@ -1,13 +1,15 @@
 // src/components/AddressBar.jsx
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import colors from '../theme/colors';
+import colors from '../theme/colors'
+import GradientBackground from '../components/GradientBackground';
+
 
 const AddressBar = ({ address = 'Saki Naka Mumbai, Maharashtra 400072' }) => (
-  <View style={styles.wrap}>
+  <GradientBackground style={styles.wrap}>
     <Text style={styles.textmain}>ADDRESS</Text>
     <Text style={styles.text}>{address}</Text>
-  </View>
+  </GradientBackground>
 );
 
 const styles = StyleSheet.create({
@@ -18,7 +20,6 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     // elevation: 10, // shadow for Android
-
   },
   text: {
     color: colors.white,

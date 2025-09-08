@@ -45,7 +45,7 @@ export default function InventoryScreen() {
 
   return (
     <View style={InventoryScreenCss.container}>
-      <GradientText text="Inventory" style={InventoryScreenCss.title} />
+           
       <ScrollView style={{ flex: 1, padding: 10 }}>
         <Animated.View style={InventoryScreenCss.customerDetailsContainer}>
           <TouchableOpacity onPress={toggleExpand}>
