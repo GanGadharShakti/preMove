@@ -1,75 +1,172 @@
-// screens/OtpScreen.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
+  Alert,
+  Image,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { OTPScreenCss } from '../assets/css/ScreensCss';
 
 export default function OtpScreen({ route, navigation }) {
   const { phone } = route.params;
   const [otp, setOtp] = useState('');
+  const [timer, setTimer] = useState(60);
+  const [isResendDisabled, setIsResendDisabled] = useState(true);
 
-  const handleVerifyOtp = () => {
+  // Countdown timer for resend button
+  useEffect(() => {
+    let interval;
+    if (isResendDisabled && timer > 0) {
+      interval = setInterval(() => {
+        setTimer(prev => prev - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      setIsResendDisabled(false);
+    }
+    return () => clearInterval(interval);
+  }, [timer, isResendDisabled]);
+
+  // ✅ Save JWT in AsyncStorage for 30 days
+  const saveToken = async token => {
+    try {
+      const expiry = Date.now() + 30 * 24 * 60 * 60 * 1000; // 30 days
+      const data = JSON.stringify({ token, expiry });
+      await AsyncStorage.setItem('APP_JWT_TOKEN', data);
+
+      // check if really saved
+      const stored = await AsyncStorage.getItem('APP_JWT_TOKEN');
+    } catch (err) {
+      console.error('Error saving JWT token:', err);
+    }
+  };
+
+  // Verify OTP
+  // Verify OTP
+  const handleVerifyOtp = async () => {
     if (otp.length < 4) {
-      alert('Enter valid OTP');
+      Alert.alert('Error', 'Enter valid OTP');
       return;
     }
 
-    // ✅ Call backend API to verify OTP
-    console.log('Verifying OTP:', otp, 'for phone:', phone);
+    try {
+      const response = await fetch('http://192.168.0.155:5000/api/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, otp }),
+      });
+      const data = await response.json();
 
-    // If OTP is correct → go to Homepage
-    navigation.replace('HomePage');
+      if (data.success && data.token) {
+        // ✅ JWT store
+        const jwtData = {
+          token: data.token,
+          expiry: data.expiry, // expiry backend se aa raha hai
+        };
+        await AsyncStorage.setItem('APP_JWT_TOKEN', JSON.stringify(jwtData));
+
+        // ✅ user phone store
+        await AsyncStorage.setItem('USER_PHONE', phone);
+
+        // ✅ pura user object store
+        if (data.user) {
+          await AsyncStorage.setItem('USER_DETAILS', JSON.stringify(data.user));
+
+          // Correct field name from API response
+          if (data.user.id) {
+            await AsyncStorage.setItem(
+              'USER_LEAD_ID',
+              data.user.lead_id.toString(),
+            );
+          }
+        }
+
+        // 🔎 Check all stored values
+        const jwtStored = await AsyncStorage.getItem('APP_JWT_TOKEN');
+        const phoneStored = await AsyncStorage.getItem('USER_PHONE');
+        const userStored = await AsyncStorage.getItem('USER_DETAILS');
+        const leadIdStored = await AsyncStorage.getItem('USER_LEAD_ID');
+
+        navigation.replace('HomePage');
+      } else {
+        Alert.alert('Error', data.error || 'Invalid OTP');
+      }
+    } catch (err) {
+      Alert.alert('Error', 'Server not reachable');
+      console.error(err);
+    }
   };
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Verify OTP</Text>
-      <Text style={styles.subtitle}>OTP sent to +91 {phone}</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Enter OTP"
-        keyboardType="number-pad"
-        value={otp}
-        onChangeText={setOtp}
+  // Resend OTP
+  const handleResendOtp = async () => {
+    setIsResendDisabled(true);
+    setTimer(60);
+
+    try {
+      const response = await fetch('http://192.168.0.155:5000/api/resend-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        Alert.alert('Success', 'OTP resent successfully!');
+      } else {
+        Alert.alert('Error', data.error || 'Failed to resend OTP');
+      }
+    } catch (err) {
+      Alert.alert('Error', 'Server not reachable');
+      console.error('Resend OTP fetch error:', err);
+    }
+  };
+
+  return (
+    <View style={OTPScreenCss.container}>
+      {/* Logo */}
+      <Image
+        source={require('../assets/images/componylogo.png')}
+        style={OTPScreenCss.logo}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleVerifyOtp}>
-        <Text style={styles.buttonText}>Verify & Continue</Text>
-      </TouchableOpacity>
+      {/* Gradient Section */}
+      <LinearGradient
+        colors={['#00b894', '#0984e3']}
+        style={OTPScreenCss.gradientBox}
+      >
+        <Text style={OTPScreenCss.otpTitle}>Enter OTP</Text>
+
+        {/* OTP Input */}
+        <TextInput
+          style={OTPScreenCss.input}
+          placeholder="----"
+          keyboardType="number-pad"
+          value={otp}
+          onChangeText={setOtp}
+          maxLength={4}
+        />
+
+        {/* Resend OTP */}
+        <TouchableOpacity disabled={isResendDisabled} onPress={handleResendOtp}>
+          <Text
+            style={[
+              OTPScreenCss.resend,
+              { color: isResendDisabled ? 'white' : 'yellow' },
+            ]}
+          >
+            {isResendDisabled ? `Resend OTP in ${timer}s` : 'Resend OTP'}
+          </Text>
+        </TouchableOpacity>
+
+        {/* Verify Button */}
+        <TouchableOpacity style={OTPScreenCss.button} onPress={handleVerifyOtp}>
+          <Text style={OTPScreenCss.buttonText}>Login</Text>
+        </TouchableOpacity>
+      </LinearGradient>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  title: { fontSize: 20, fontWeight: '700', marginBottom: 10 },
-  subtitle: { fontSize: 14, color: '#666', marginBottom: 30 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    width: '100%',
-    textAlign: 'center',
-    fontSize: 18,
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: '#00b894',
-    paddingVertical: 15,
-    borderRadius: 8,
-    width: '100%',
-    alignItems: 'center',
-  },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-});

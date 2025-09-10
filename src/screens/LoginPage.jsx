@@ -1,57 +1,56 @@
-// screens/LoginScreen.jsx
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  LoginScreenCssheet,
-  Image,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 import { LoginScreenCss } from '../assets/css/ScreensCss';
+import GradientBackground from '../components/GradientBackground';
+import colors from '../theme/colors';
 
 export default function LoginScreen({ navigation }) {
   const [phone, setPhone] = useState('');
 
-  const handleSendCode = () => {
-    if (phone.length < 10) {
-      alert('Enter valid phone number');
-      return;
-    }
-    // ✅ Here call your backend API to send OTP
-    console.log('Sending OTP to:', phone);
+  const handleSendCode = async () => {
+    if (phone.length < 10) return Alert.alert('Error', 'Enter valid phone number');
 
-    // Move to OTP screen
-    navigation.navigate('Otp', { phone });
+    try {
+      const response = await fetch('http://192.168.0.155:5000/api/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+
+      const data = await response.json();
+      if (data.success) navigation.navigate('Otp', { phone });
+      else Alert.alert('Error', data.error || 'Failed to send OTP');
+    } catch (err) {
+      Alert.alert('Error', 'Server not reachable');
+    }
   };
 
   return (
     <View style={LoginScreenCss.container}>
-      <Image
-        source={require('../assets/images/componylogo.png')} // place your logo here
-        style={LoginScreenCss.logo}
-        resizeMode="contain"
-      />
-      <Text style={LoginScreenCss.loginText}>Login to continue</Text>
-
-      <View style={LoginScreenCss.inputContainer}>
-        <Text style={LoginScreenCss.countryCode}>+91</Text>
-        <TextInput
-          style={LoginScreenCss.input}
-          placeholder="Enter Phone Number..."
-          keyboardType="phone-pad"
-          value={phone}
-          onChangeText={setPhone}
-        />
+      <View style={LoginScreenCss.imageContainer}>
+        <Image source={require('../assets/images/componylogo.png')} style={LoginScreenCss.logo}/>
       </View>
-
-      <Text style={LoginScreenCss.note}>We will send an otp to confirm the number</Text>
-
-      <TouchableOpacity style={LoginScreenCss.button} onPress={handleSendCode}>
-        <Text style={LoginScreenCss.buttonText}>Get verification code</Text>
-      </TouchableOpacity>
+      <GradientBackground style={LoginScreenCss.loginContainer}>
+        <View style={{ width: '100%', height: '60%', justifyContent: 'start', alignItems: 'center' }}>
+          <Text style={LoginScreenCss.title}>Login to continue</Text>
+          <View style={LoginScreenCss.inputContainer}>
+            <Text style={LoginScreenCss.countryCode}>+91</Text>
+            <TextInput
+              style={LoginScreenCss.input}
+              placeholder="Enter Phone Number"
+              keyboardType="phone-pad"
+              value={phone}
+              onChangeText={setPhone}
+              maxLength={10}
+              placeholderTextColor={colors.muted}
+            />
+          </View>
+          <Text style={LoginScreenCss.subtitle}>We will send an OTP to confirm your number</Text>
+          <TouchableOpacity style={LoginScreenCss.button} onPress={handleSendCode}>
+            <Text style={LoginScreenCss.buttonText}>Get verification code</Text>
+          </TouchableOpacity>
+        </View>
+      </GradientBackground>
     </View>
   );
 }
-
-

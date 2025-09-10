@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,19 +6,23 @@ import {
   TouchableOpacity,
   Animated,
   Easing,
+  ActivityIndicator,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import InventoryItem from '../components/InventoryItem';
 import { InventoryScreenCss } from '../assets/css/ScreensCss';
-import GradientText from '../components/GradientText';
 import colors from '../theme/colors';
 
 export default function InventoryScreen() {
   const [expanded, setExpanded] = useState(false);
+  const [customer, setCustomer] = useState(null);
+  const [inventory, setInventory] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const animation = useRef(new Animated.Value(0)).current;
 
   const toggleExpand = () => {
     if (expanded) {
-      // collapse
       Animated.timing(animation, {
         toValue: 0,
         duration: 300,
@@ -27,7 +31,6 @@ export default function InventoryScreen() {
       }).start(() => setExpanded(false));
     } else {
       setExpanded(true);
-      // expand
       Animated.timing(animation, {
         toValue: 1,
         duration: 300,
@@ -37,67 +40,120 @@ export default function InventoryScreen() {
     }
   };
 
-  // map 0 → 0 height, 1 → expanded height
   const animatedHeight = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [10, 410], // adjust to fit your details content
+    outputRange: [0, 410],
   });
+
+  // Fetch customer and inventory
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // 1️⃣ Get user details and JWT
+        const rawUser = await AsyncStorage.getItem('USER_DETAILS');
+        const rawJwt = await AsyncStorage.getItem('APP_JWT_TOKEN');
+        const leadId = await AsyncStorage.getItem('USER_LEAD_ID');
+
+        if (!rawUser || !rawJwt || !leadId) {
+          console.log('❌ Missing session data');
+          setLoading(false);
+          return;
+        }
+
+        const user = JSON.parse(rawUser);
+        setCustomer(user);
+
+        const { token } = JSON.parse(rawJwt);
+
+        // 2️⃣ Fetch inventory
+        const res = await fetch(
+          `http://192.168.0.155:5000/api/inventory/${leadId}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        const invData = await res.json();
+
+        if (!invData || !Array.isArray(invData)) {
+          console.log('❌ Invalid inventory data');
+          setLoading(false);
+          return;
+        }
+
+        // 3️⃣ Fetch sub-category details for each item
+        const inventoryWithName = await Promise.all(
+          invData.map(item =>
+            fetch(
+              `http://192.168.0.155:5000/api/sub-category-item/${item.sub_category_item_id}`,
+            )
+              .then(res => res.json())
+              .then(subItem => ({
+                ...item,
+                sub_category_item_name:
+                  subItem?.sub_category_item_name || 'N/A',
+                sub_category_item_image: subItem?.sub_category_item_image
+                  ? `https://res.cloudinary.com/dfqledkbu/image/upload/v1757054818/premove_inventory/${subItem.sub_category_item_image}`
+                  : null,
+              }))
+              .catch(() => ({
+                ...item,
+                sub_category_item_name: 'N/A',
+                sub_category_item_image: null,
+              })),
+          ),
+        );
+
+        setInventory(inventoryWithName);
+      } catch (err) {
+        console.error('❌ Error fetching inventory:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+  const mapLift = value => {
+    switch (value) {
+      case 0:
+        return 'No Service Lift';
+      case 1:
+        return 'Service Lift';
+      case 2:
+        return 'Small Lift';
+      default:
+        return 'N/A';
+    }
+  };
 
   return (
     <View style={InventoryScreenCss.container}>
-           
       <ScrollView style={{ flex: 1, padding: 10 }}>
-        <Animated.View style={InventoryScreenCss.customerDetailsContainer}>
-          <TouchableOpacity onPress={toggleExpand}>
-            {/* Always visible top rows */}
-            <View
-              style={{
-                borderWidth: 1,
-                borderColor: '#ccc',
-                borderRadius: 8,
-                alignItems:'flex-start',
-                // justifyContent:'center'
-              }}
-            >
-              {/* Row 1 */}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  borderBottomWidth: 1,
-                  borderColor: '#ccc',
-                  alignItems: 'center',
-                }}
-              >
-                <Text style={{ flex: 1, padding: 8, fontWeight: 'bold' }}>
-                  Phone
-                </Text>
-                <Text style={{ paddingHorizontal: 4 }}>:</Text>
-                <Text style={{ flex: 1, padding: 8 }}>9876543210</Text>
-              </View>
-
-              {/* Row 2 */}
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{ flex: 1, padding: 8, fontWeight: 'bold' }}>
-                  Email
-                </Text>
-                <Text style={{ paddingHorizontal: 4 }}>:</Text>
-                <Text style={{ flex: 1, padding: 8 }}>Ashok@gmail.com</Text>
-              </View>
-            </View>
-
-            {/* Animated expanding section */}
-            <Animated.View
-              style={{ overflow: 'hidden', height: animatedHeight }}
-            >
+        {customer && (
+          <Animated.View style={InventoryScreenCss.customerDetailsContainer}>
+            <TouchableOpacity onPress={toggleExpand}>
               <View
                 style={{
                   borderWidth: 1,
                   borderColor: '#ccc',
                   borderRadius: 8,
-                  marginTop: 10,
+                  alignItems: 'flex-start',
                 }}
               >
-                {/* Row 3 */}
+                {/* Always visible top rows */}
                 <View
                   style={{
                     flexDirection: 'row',
@@ -107,13 +163,13 @@ export default function InventoryScreen() {
                   }}
                 >
                   <Text style={{ flex: 1, padding: 8, fontWeight: 'bold' }}>
-                    Moving Date
+                    Phone
                   </Text>
                   <Text style={{ paddingHorizontal: 4 }}>:</Text>
-                  <Text style={{ flex: 1, padding: 8 }}>15/05/2025</Text>
+                  <Text style={{ flex: 1, padding: 8 }}>
+                    {customer.cust_mobile}
+                  </Text>
                 </View>
-
-                {/* Row 4 */}
                 <View
                   style={{
                     flexDirection: 'row',
@@ -123,155 +179,102 @@ export default function InventoryScreen() {
                   }}
                 >
                   <Text style={{ flex: 1, padding: 8, fontWeight: 'bold' }}>
-                    Home Size
+                    Email
                   </Text>
                   <Text style={{ paddingHorizontal: 4 }}>:</Text>
-                  <Text style={{ flex: 1, padding: 8 }}>400 SQFT</Text>
-                </View>
-
-                {/* Row 5 */}
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    borderBottomWidth: 1,
-                    borderColor: '#ccc',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Text style={{ flex: 1, padding: 8, fontWeight: 'bold' }}>
-                    Moving From
+                  <Text style={{ flex: 1, padding: 8 }}>
+                    {customer.cust_email}
                   </Text>
-                  <Text style={{ paddingHorizontal: 4 }}>:</Text>
-                  <Text style={{ flex: 1, padding: 8 }}>Mumbai</Text>
-                </View>
-
-                {/* Row 6 */}
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    borderBottomWidth: 1,
-                    borderColor: '#ccc',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Text style={{ flex: 1, padding: 8, fontWeight: 'bold' }}>
-                    Moving To
-                  </Text>
-                  <Text style={{ paddingHorizontal: 4 }}>:</Text>
-                  <Text style={{ flex: 1, padding: 8 }}>Pune</Text>
-                </View>
-
-                {/* Row 7 */}
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    borderBottomWidth: 1,
-                    borderColor: '#ccc',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Text style={{ flex: 1, padding: 8, fontWeight: 'bold' }}>
-                    Loading Floor No
-                  </Text>
-                  <Text style={{ paddingHorizontal: 4 }}>:</Text>
-                  <Text style={{ flex: 1, padding: 8 }}>5</Text>
-                </View>
-
-                {/* Row 8 */}
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    borderBottomWidth: 1,
-                    borderColor: '#ccc',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Text style={{ flex: 1, padding: 8, fontWeight: 'bold' }}>
-                    Unloading Floor No
-                  </Text>
-                  <Text style={{ paddingHorizontal: 4 }}>:</Text>
-                  <Text style={{ flex: 1, padding: 8 }}>2</Text>
-                </View>
-
-                {/* Row 9 */}
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    borderBottomWidth: 1,
-                    borderColor: '#ccc',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Text style={{ flex: 1, padding: 8, fontWeight: 'bold' }}>
-                    Loading Services
-                  </Text>
-                  <Text style={{ paddingHorizontal: 4 }}>:</Text>
-                  <Text style={{ flex: 1, padding: 8 }}>Lift</Text>
-                </View>
-
-                {/* Row 10 */}
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    borderBottomWidth: 1,
-                    borderColor: '#ccc',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Text style={{ flex: 1, padding: 8, fontWeight: 'bold' }}>
-                    Unloading Services
-                  </Text>
-                  <Text style={{ paddingHorizontal: 4 }}>:</Text>
-                  <Text style={{ flex: 1, padding: 8 }}>N/A</Text>
-                </View>
-
-                {/* Row 11 */}
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    borderBottomWidth: 1,
-                    borderColor: '#ccc',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Text style={{ flex: 1, padding: 8, fontWeight: 'bold' }}>
-                    Moving Type
-                  </Text>
-                  <Text style={{ paddingHorizontal: 4 }}>:</Text>
-                  <Text style={{ flex: 1, padding: 8 }}>Inter City</Text>
-                </View>
-
-                {/* Row 12 */}
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={{ flex: 1, padding: 8, fontWeight: 'bold' }}>
-                    Distance
-                  </Text>
-                  <Text style={{ paddingHorizontal: 4 }}>:</Text>
-                  <Text style={{ flex: 1, padding: 8 }}>25 Km</Text>
                 </View>
               </View>
-            </Animated.View>
 
-            {/* Divider */}
-            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+              {/* Animated expanding section */}
+              <Animated.View
+                style={{ overflow: 'hidden', height: animatedHeight }}
+              >
+                <View
+                  style={{
+                    borderWidth: 1,
+                    borderColor: '#ccc',
+                    borderRadius: 8,
+                    marginTop: 10,
+                  }}
+                >
+                  {[
+                    { label: 'Moving Date', value: customer.moving_date },
+                    { label: 'Home Size', value: customer.home_type_id },
+                    { label: 'Moving From', value: customer.moving_from },
+                    { label: 'Moving To', value: customer.moving_to },
+                    {
+                      label: 'Loading Floor No',
+                      value: customer.moving_from_floor_no,
+                    },
+                    {
+                      label: 'Unloading Floor No',
+                      value: customer.moving_to_floor_no,
+                    },
+                    {
+                      label: 'Loading Services',
+                      value: mapLift(customer.moving_from_service_lift),
+                    },
+                    {
+                      label: 'Unloading Services',
+                      value: mapLift(customer.moving_to_service_lift),
+                    },
+                    { label: 'Moving Type', value: customer.moving_type },
+                    { label: 'Distance', value: customer.approx_dist },
+                  ].map((row, index) => (
+                    <View
+                      key={index}
+                      style={{
+                        flexDirection: 'row',
+                        borderBottomWidth: index < 9 ? 1 : 0,
+                        borderColor: '#ccc',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Text style={{ flex: 1, padding: 8, fontWeight: 'bold' }}>
+                        {row.label}
+                      </Text>
+                      <Text style={{ paddingHorizontal: 4 }}>:</Text>
+                      <Text style={{ flex: 1, padding: 8 }}>{row.value}</Text>
+                    </View>
+                  ))}
+                </View>
+              </Animated.View>
+
+              {/* Divider */}
               <View
                 style={{
-                  width: 150,
-                  backgroundColor: colors.primary,
-                  height: 2,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginVertical: 10,
                 }}
-              />
-            </View>
-          </TouchableOpacity>
-        </Animated.View>
+              >
+                <View
+                  style={{
+                    width: 150,
+                    backgroundColor: colors.primary,
+                    height: 2,
+                  }}
+                />
+              </View>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
 
-        <InventoryItem
-          name="SOFA"
-          qty={2}
-          onCameraPress={() => alert('Open Camera')}
-        />
-        <InventoryItem name="TABLE" qty={2} image="https://picsum.photos/200" />
-        <InventoryItem name="TV" qty={2} image="https://picsum.photos/201" />
+        {/* Inventory items */}
+        {inventory.map((item, index) => (
+          <InventoryItem
+            key={index}
+            name={item.sub_category_item_name || 'N/A'}
+            qty={item.quantity || 0}
+            image={item.sub_category_item_image} // this will be null if no image
+            onCameraPress={() =>
+              alert(`Open camera for ${item.sub_category_item_name}`)
+            }
+          />
+        ))}
       </ScrollView>
     </View>
   );

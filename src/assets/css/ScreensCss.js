@@ -175,36 +175,148 @@ export const AdditemScreenCss = StyleSheet.create({
 export const LoginScreenCss = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
     backgroundColor: '#fff',
   },
-  logo: { width: 180, height: 120, marginBottom: 30 },
-  loginText: { fontSize: 16, fontWeight: '600', marginBottom: 15 },
-  inputContainer: {
-    flexDirection: 'row',
-    borderWidth: 1,
-    borderColor: colors.primary,
-    borderRadius: 8,
-    padding: 10,
+  imageContainer: {
     width: '100%',
-    marginBottom: 15,
+    height: '40%',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  countryCode: { fontSize: 16, marginRight: 10 },
-  input: { flex: 1, fontSize: 16 },
-  note: { fontSize: 12, color: '#777', marginBottom: 20 },
+  logo: {
+    width: 200,
+    height: 180,
+    // marginBottom: 20,
+  },
+  loginContainer: {
+    width: '100%',
+    height: '60%',
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: 'white',
+    textAlign: 'left',
+  },
+  inputContainer: {
+    width: '90%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    // justifyContent:'center',
+    // borderWidth: 1,
+    // borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    gap: 10,
+
+    // backgroundColor:colors.muted
+  },
+  countryCode: {
+    fontSize: 16,
+    color: 'white',
+    backgroundColor: 'white',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 10,
+    color: 'black ',
+  },
+  input: {
+    flex: 1,
+    padding: 10,
+    fontSize: 16,
+    color: 'black',
+    backgroundColor: 'white',
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  subtitle: {
+    color: '#666',
+    marginBottom: 20,
+    color: 'white',
+  },
   button: {
     backgroundColor: '#00b894',
-    paddingVertical: 15,
+    padding: 15,
     borderRadius: 8,
-    width: '100%',
+    width: '80%',
     alignItems: 'center',
   },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
 });
+
+export const OTPScreenCss = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logo: {
+    width: '150',
+    height: '50%',
+    resizeMode: 'contain',
+    marginBottom: -20,
+  },
+  gradientBox: {
+    flex: 1,
+    width: '100%',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    padding: 20,
+    alignItems: 'center',
+  },
+  otpTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#fff',
+    marginBottom: 20,
+    marginTop: 40,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#fff',
+    borderRadius: 10,
+    padding: 12,
+    width: '70%',
+    textAlign: 'center',
+    fontSize: 22,
+    color: '#fff',
+    letterSpacing: 15, // spacing between digits
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    marginBottom: 20,
+  },
+  resend: {
+    color: '#ffffffff',
+    // textDecorationLine: 'underline',
+    marginBottom: 30,
+  },
+  button: {
+    backgroundColor: '#00cec9',
+    paddingVertical: 15,
+    borderRadius: 8,
+    width: '90%',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+});
+
 export const AccountScreenCss = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   card: {
@@ -255,8 +367,7 @@ export const AddItemCss = StyleSheet.create({
     width: '100%',
     marginVertical: 10,
     // height: '10%',
-    paddingHorizontal:10
-  
+    paddingHorizontal: 10,
   },
   listWrapper: {
     width: '100%',
@@ -316,11 +427,11 @@ export const AddItemCss = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 18,
   },
-  searchwrap:{
-    width:'100%',
-    justifyContent:'center',
-    alignItems:'center',
-    paddingVertical:10
+  searchwrap: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 10,
   },
   searchContainer: {
     width: '90%',
@@ -329,7 +440,7 @@ export const AddItemCss = StyleSheet.create({
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 8,
+    borderRadius: 20,
     marginHorizontal: 15,
     marginBottom: 10,
     paddingHorizontal: 10,

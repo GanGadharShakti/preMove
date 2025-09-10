@@ -17,8 +17,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     height: 100,
     justifyContent: 'center',
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
     // elevation: 10, // shadow for Android
   },
   text: {

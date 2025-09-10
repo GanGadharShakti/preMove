@@ -8,29 +8,30 @@ import BottomTabs from './navigation/BottomTabs';
 import SplashScreen from './screens/SplashScreen';
 import Additem from './screens/AddInventory';
 import LoginPage from './screens/LoginPage';
-import OtpScreen from './screens/OtpScreen'; // 👈 Create this file like I shared before
+import OtpScreen from './screens/OtpScreen';
 
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => (
   <NavigationContainer>
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {/* Splash first */}
+      {/* 1️⃣ Splash decides where to go */}
       <Stack.Screen name="Splash" component={SplashScreen} />
 
-      {/* Login Flow */}
-      <Stack.Screen name="MainsTabs" component={LoginPage} />
+      {/* 2️⃣ Auth Flow */}
+      <Stack.Screen name="Login" component={LoginPage} />
       <Stack.Screen name="Otp" component={OtpScreen} />
 
-      {/* After login success → go to HomePage (BottomTabs) */}
+      {/* 3️⃣ Home Flow */}
       <Stack.Screen
-        name="MainTabs"
+        name="HomePage"
         component={BottomTabs}
         options={{
           cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
         }}
       />
 
+      {/* 4️⃣ Other Screens */}
       <Stack.Screen name="AddItem" component={Additem} />
     </Stack.Navigator>
   </NavigationContainer>
