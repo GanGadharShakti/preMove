@@ -2,7 +2,7 @@ import colors from '../../theme/colors';
 import { StyleSheet } from 'react-native';
 
 export const InventoryScreenCss = StyleSheet.create({
-  container: { flex: 1, padding: 5 },
+  container: { width: '100%', flex: 1, padding: 5, height: 10 },
   title: {
     fontSize: 36,
     fontWeight: 'bold',

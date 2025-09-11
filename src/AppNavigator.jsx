@@ -9,6 +9,7 @@ import SplashScreen from './screens/SplashScreen';
 import Additem from './screens/AddInventory';
 import LoginPage from './screens/LoginPage';
 import OtpScreen from './screens/OtpScreen';
+import ManagerLoginScreen from './screens/ManagerLoginScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +34,7 @@ const AppNavigator = () => (
 
       {/* 4️⃣ Other Screens */}
       <Stack.Screen name="AddItem" component={Additem} />
+      <Stack.Screen name="MangerLogin" component={ManagerLoginScreen} />
     </Stack.Navigator>
   </NavigationContainer>
 );

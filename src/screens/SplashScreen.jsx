@@ -6,7 +6,7 @@ const SplashScreen = ({ navigation }) => {
   useEffect(() => {
     const checkAuth = async () => {
       const phone = await AsyncStorage.getItem('USER_PHONE');
-      console.log('📦 Stored USER_PHONE:', phone); // <-- check kya phone store hai
+      console.log('📦 Stored USER_PHONE:', phone);
       if (!phone) return navigation.replace('Login');
 
       try {
@@ -14,7 +14,7 @@ const SplashScreen = ({ navigation }) => {
           `http://192.168.0.155:5000/api/check-jwt?phone=${phone}`,
         );
         const data = await res.json();
-// <-- API response
+        console.log("🔍 API response:", data);
 
         if (data.success && data.token && Date.now() < data.expiry) {
           console.log('✅ JWT valid');
@@ -35,11 +35,19 @@ const SplashScreen = ({ navigation }) => {
               JSON.stringify(data.user),
             );
 
-            // Store USER_LEAD_ID from lead_id field
+            // Save ID (lead_id or manager_id)
             if (data.user.id) {
               await AsyncStorage.setItem(
-                'USER_LEAD_ID',
+                'USER_ID',
                 data.user.id.toString(),
+              );
+            }
+
+            // Save TYPE (customer / manager)
+            if (data.user.type) {
+              await AsyncStorage.setItem(
+                'USER_TYPE',
+                data.user.type,
               );
             }
           }

@@ -42,7 +42,7 @@ export default function InventoryScreen() {
 
   const animatedHeight = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 410],
+    outputRange: [0, 510],
   });
 
   // Fetch customer and inventory
@@ -141,7 +141,7 @@ export default function InventoryScreen() {
 
   return (
     <View style={InventoryScreenCss.container}>
-      <ScrollView style={{ flex: 1, padding: 10 }}>
+      <ScrollView style={{ flex: 1, padding: 10}}>
         {customer && (
           <Animated.View style={InventoryScreenCss.customerDetailsContainer}>
             <TouchableOpacity onPress={toggleExpand}>

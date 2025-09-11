@@ -20,6 +20,7 @@ import Account from '../screens/Account';
 import AddItem from '../screens/AddItem';
 import { StyleSheet, View } from 'react-native';
 import AddressBar from '../components/AddressBar';
+import ManageLogin from '../screens/ManagerLoginScreen';
 
 const Tab = createBottomTabNavigator();
 
