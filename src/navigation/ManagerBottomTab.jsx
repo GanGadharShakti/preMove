@@ -10,13 +10,14 @@ import {
   UserGroupIcon,
   DocumentArrowDownIcon,
   ChartBarIcon,
+  UserCircleIcon,
 } from "react-native-heroicons/outline";
 
 // Manager Screens
 import ManagerHomeScreen from "../screens/ManagerScreens/ManagerScreen";
 import ApprovalRequests from "../screens/ManagerScreens/ApprovalRequests";
 import CustomerList from "../screens/ManagerScreens/CustomerInventrory";
-// import PdfViewer from "../screens/ManagerScreens/PdfViewer";
+import ManagerProfile from "../screens/ManagerScreens/ManagerProfile.jsx";
 import Reports from "../screens/ManagerScreens/Reports";
 
 const Tab = createBottomTabNavigator();
@@ -41,8 +42,8 @@ const ManagerBottomTab = () => (
             Home: <HomeIcon color={color} size={iconSize} />,
             Approvals: <ClipboardDocumentCheckIcon color={color} size={iconSize} />,
             Customers: <UserGroupIcon color={color} size={iconSize} />,
-            PDFs: <DocumentArrowDownIcon color={color} size={iconSize} />,
             Reports: <ChartBarIcon color={color} size={iconSize} />,
+            ManagerProfile: <UserCircleIcon color={color} size={iconSize} />,
           };
           return iconsMap[route.name] || null;
         },
@@ -51,8 +52,8 @@ const ManagerBottomTab = () => (
       <Tab.Screen name="Home" component={ManagerHomeScreen} />
       <Tab.Screen name="Approvals" component={ApprovalRequests} />
       <Tab.Screen name="Customers" component={CustomerList} />
-      {/* <Tab.Screen name="PDFs" component={PdfViewer} /> */}
       <Tab.Screen name="Reports" component={Reports} />
+      <Tab.Screen name="ManagerProfile" component={ManagerProfile} />
     </Tab.Navigator>
   </View>
 );

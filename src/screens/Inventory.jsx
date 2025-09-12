@@ -52,7 +52,7 @@ export default function InventoryScreen() {
         // 1️⃣ Get user details and JWT
         const rawUser = await AsyncStorage.getItem('USER_DETAILS');
         const rawJwt = await AsyncStorage.getItem('APP_JWT_TOKEN');
-        const leadId = await AsyncStorage.getItem('USER_LEAD_ID');
+        const leadId = await AsyncStorage.getItem('USER_ID');
         console.log('rawUser', rawUser);
         console.log('rawJwt', rawJwt);
         console.log('leadId', leadId);
@@ -69,15 +69,14 @@ export default function InventoryScreen() {
         const { token } = JSON.parse(rawJwt);
 
         // 2️⃣ Fetch inventory
-        const res = await api.get(`inventory/${leadId}`, {
-          method: 'GET',
+        const res = await api.get(`/inventory/${leadId}`, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
 
-        const invData = await res.data;
+        const invData = res.data; // ✅ axios me yahi sahi hai
 
         if (!invData || !Array.isArray(invData)) {
           console.log('❌ Invalid inventory data');
