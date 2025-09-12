@@ -53,6 +53,9 @@ export default function InventoryScreen() {
         const rawUser = await AsyncStorage.getItem('USER_DETAILS');
         const rawJwt = await AsyncStorage.getItem('APP_JWT_TOKEN');
         const leadId = await AsyncStorage.getItem('USER_LEAD_ID');
+        console.log('rawUser', rawUser)
+        console.log('rawJwt', rawJwt)
+        console.log('leadId', leadId)
 
         if (!rawUser || !rawJwt || !leadId) {
           console.log('❌ Missing session data');

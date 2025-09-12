@@ -12,7 +12,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { OTPScreenCss } from '../assets/css/ScreensCss';
 
 export default function OtpScreen({ route, navigation }) {
-  const { phone } = route.params;
+  const { phone, userType } = route.params; // 👈 userType aa raha hai ManagerLoginScreen se
+  // const { phone } = route.params;
   const [otp, setOtp] = useState('');
   const [timer, setTimer] = useState(60);
   const [isResendDisabled, setIsResendDisabled] = useState(true);
@@ -46,6 +47,7 @@ export default function OtpScreen({ route, navigation }) {
   };
 
   // Verify OTP
+
   const handleVerifyOtp = async () => {
     if (otp.length < 4) {
       Alert.alert('Error', 'Enter valid OTP');
@@ -56,12 +58,13 @@ export default function OtpScreen({ route, navigation }) {
       const response = await fetch('http://192.168.0.155:5000/api/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, otp }),
+        body: JSON.stringify({ phone, otp, role: userType }), // 👈 role pass karo
       });
       const data = await response.json();
       console.log('Verify OTP response:', data);
 
       if (data.success && data.token) {
+        // Token + expiry
         await AsyncStorage.setItem(
           'APP_JWT_TOKEN',
           JSON.stringify({
@@ -69,7 +72,27 @@ export default function OtpScreen({ route, navigation }) {
             expiry: Date.now() + 30 * 24 * 60 * 60 * 1000,
           }),
         );
+
+        // Phone + role
+        // Phone + role
         await AsyncStorage.setItem('USER_PHONE', phone);
+
+        // agar userType undefined hai to "customer" default rakho
+        await AsyncStorage.setItem('USER_TYPE', userType || 'customer');
+
+        // ✅ Save user details
+        if (data.user) {
+          await AsyncStorage.setItem('USER_DETAILS', JSON.stringify(data.user));
+
+          if (data.user.id) {
+            await AsyncStorage.setItem('USER_ID', data.user.id.toString());
+          }
+        }
+
+        console.log(
+          '✅ User stored:',
+          await AsyncStorage.getItem('USER_DETAILS'),
+        );
         navigation.replace('HomePage');
       } else {
         Alert.alert('Error', data.error || 'Invalid OTP');
@@ -82,9 +105,6 @@ export default function OtpScreen({ route, navigation }) {
 
   // Resend OTP
 
-
-
-  
   const handleResendOtp = async () => {
     setIsResendDisabled(true);
     setTimer(60);
@@ -93,7 +113,7 @@ export default function OtpScreen({ route, navigation }) {
       const response = await fetch('http://192.168.0.155:5000/api/resend-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone }),
+        body: JSON.stringify({ phone, role: userType }), // 👈 role bhejna hoga
       });
 
       const data = await response.json();

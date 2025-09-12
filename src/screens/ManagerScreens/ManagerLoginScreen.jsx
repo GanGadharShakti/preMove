@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
-import { LoginScreenCss } from '../assets/css/ScreensCss';
-import GradientBackground from '../components/GradientBackground';
-import colors from '../theme/colors';
+import { LoginScreenCss } from '../../assets/css/ScreensCss';
+import GradientBackground from '../../components/GradientBackground';
+import colors from '../../theme/colors';
 
 export default function ManagerLoginScreen({ navigation }) {
   const [phone, setPhone] = useState('');
@@ -11,7 +11,6 @@ export default function ManagerLoginScreen({ navigation }) {
     if (phone.length < 10) return Alert.alert('Error', 'Enter valid phone number');
 
     try {
-      // 👇 Manager के लिए नया API endpoint
       const response = await fetch('http://192.168.0.155:5000/api/manager/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -20,8 +19,7 @@ export default function ManagerLoginScreen({ navigation }) {
 
       const data = await response.json();
       if (data.success) {
-        // 👇 Otp screen पर जाते वक्त userType भी भेजो
-        navigation.navigate('Otp', { phone, userType: 'manager' });
+        navigation.navigate('ManagerOtpScreen', { phone });
       } else {
         Alert.alert('Error', data.error || 'Failed to send OTP');
       }
@@ -33,7 +31,10 @@ export default function ManagerLoginScreen({ navigation }) {
   return (
     <View style={LoginScreenCss.container}>
       <View style={LoginScreenCss.imageContainer}>
-        <Image source={require('../assets/images/componylogo.png')} style={LoginScreenCss.logo}/>
+        <Image
+          source={require('../../assets/images/componylogo.png')}
+          style={LoginScreenCss.logo}
+        />
       </View>
       <GradientBackground style={LoginScreenCss.loginContainer}>
         <View style={{ width: '100%', height: '60%', justifyContent: 'start', alignItems: 'center' }}>
@@ -50,7 +51,9 @@ export default function ManagerLoginScreen({ navigation }) {
               placeholderTextColor={colors.muted}
             />
           </View>
-          <Text style={LoginScreenCss.subtitle}>OTP will be sent to your registered number</Text>
+          <Text style={LoginScreenCss.subtitle}>
+            OTP will be sent to your registered number
+          </Text>
           <TouchableOpacity style={LoginScreenCss.button} onPress={handleSendCode}>
             <Text style={LoginScreenCss.buttonText}>Get verification code</Text>
           </TouchableOpacity>

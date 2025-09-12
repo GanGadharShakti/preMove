@@ -2,69 +2,36 @@ import React, { useEffect } from 'react';
 import { View, Image, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const SplashScreen = ({ navigation }) => {
+export default function SplashScreen({ navigation }) {
   useEffect(() => {
-    const checkAuth = async () => {
-      const phone = await AsyncStorage.getItem('USER_PHONE');
-      console.log('📦 Stored USER_PHONE:', phone);
-      if (!phone) return navigation.replace('Login');
-
+    const checkLogin = async () => {
       try {
-        const res = await fetch(
-          `http://192.168.0.155:5000/api/check-jwt?phone=${phone}`,
-        );
-        const data = await res.json();
-        console.log("🔍 API response:", data);
+        const tokenData = await AsyncStorage.getItem('APP_JWT_TOKEN');
+        const userType = await AsyncStorage.getItem('USER_TYPE');
+        const phone = await AsyncStorage.getItem('USER_PHONE');
 
-        if (data.success && data.token && Date.now() < data.expiry) {
-          console.log('✅ JWT valid');
+        if (!tokenData || !userType || !phone) {
+          return navigation.replace('Login');
+        }
 
-          // Store JWT
-          await AsyncStorage.setItem(
-            'APP_JWT_TOKEN',
-            JSON.stringify({
-              token: data.token,
-              expiry: data.expiry,
-            }),
-          );
+        const { token, expiry } = JSON.parse(tokenData);
 
-          // Store USER_DETAILS
-          if (data.user) {
-            await AsyncStorage.setItem(
-              'USER_DETAILS',
-              JSON.stringify(data.user),
-            );
-
-            // Save ID (lead_id or manager_id)
-            if (data.user.id) {
-              await AsyncStorage.setItem(
-                'USER_ID',
-                data.user.id.toString(),
-              );
-            }
-
-            // Save TYPE (customer / manager)
-            if (data.user.type) {
-              await AsyncStorage.setItem(
-                'USER_TYPE',
-                data.user.type,
-              );
-            }
+        if (Date.now() < expiry) {
+          if (userType === 'manager') {
+            navigation.replace('ManagerHomePage');
+          } else {
+            navigation.replace('HomePage');
           }
-
-          navigation.replace('HomePage');
         } else {
-          console.log('❌ JWT invalid or expired, navigating to Login');
           navigation.replace('Login');
         }
       } catch (err) {
-        console.error('⚠️ Error calling check-jwt API:', err);
+        console.error('SplashScreen Error:', err);
         navigation.replace('Login');
       }
     };
 
-    const timer = setTimeout(checkAuth, 1200);
-    return () => clearTimeout(timer);
+    checkLogin();
   }, [navigation]);
 
   return (
@@ -78,7 +45,7 @@ const SplashScreen = ({ navigation }) => {
       <Text style={styles.text}>Welcome to Eleplace</Text>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -96,5 +63,3 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
 });
-
-export default SplashScreen;
