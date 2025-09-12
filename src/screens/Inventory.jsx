@@ -12,7 +12,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import InventoryItem from '../components/InventoryItem';
 import { InventoryScreenCss } from '../assets/css/ScreensCss';
 import colors from '../theme/colors';
-
+import { api } from '../utils/baseurl';
 export default function InventoryScreen() {
   const [expanded, setExpanded] = useState(false);
   const [customer, setCustomer] = useState(null);
@@ -53,9 +53,9 @@ export default function InventoryScreen() {
         const rawUser = await AsyncStorage.getItem('USER_DETAILS');
         const rawJwt = await AsyncStorage.getItem('APP_JWT_TOKEN');
         const leadId = await AsyncStorage.getItem('USER_LEAD_ID');
-        console.log('rawUser', rawUser)
-        console.log('rawJwt', rawJwt)
-        console.log('leadId', leadId)
+        console.log('rawUser', rawUser);
+        console.log('rawJwt', rawJwt);
+        console.log('leadId', leadId);
 
         if (!rawUser || !rawJwt || !leadId) {
           console.log('❌ Missing session data');
@@ -69,18 +69,15 @@ export default function InventoryScreen() {
         const { token } = JSON.parse(rawJwt);
 
         // 2️⃣ Fetch inventory
-        const res = await fetch(
-          `http://192.168.0.155:5000/api/inventory/${leadId}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
+        const res = await api.get(`inventory/${leadId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
-        );
+        });
 
-        const invData = await res.json();
+        const invData = await res.data;
 
         if (!invData || !Array.isArray(invData)) {
           console.log('❌ Invalid inventory data');
@@ -90,25 +87,29 @@ export default function InventoryScreen() {
 
         // 3️⃣ Fetch sub-category details for each item
         const inventoryWithName = await Promise.all(
-          invData.map(item =>
-            fetch(
-              `http://192.168.0.155:5000/api/sub-category-item/${item.sub_category_item_id}`,
-            )
-              .then(res => res.json())
-              .then(subItem => ({
+          invData.map(async item => {
+            try {
+              const { data: subItem } = await api.get(
+                `sub-category-item/${item.sub_category_item_id}`,
+              );
+
+              return {
                 ...item,
                 sub_category_item_name:
                   subItem?.sub_category_item_name || 'N/A',
                 sub_category_item_image: subItem?.sub_category_item_image
                   ? `https://res.cloudinary.com/dfqledkbu/image/upload/v1757054818/premove_inventory/${subItem.sub_category_item_image}`
                   : null,
-              }))
-              .catch(() => ({
+              };
+            } catch (err) {
+              console.error('❌ Sub-category fetch error:', err.message);
+              return {
                 ...item,
                 sub_category_item_name: 'N/A',
                 sub_category_item_image: null,
-              })),
-          ),
+              };
+            }
+          }),
         );
 
         setInventory(inventoryWithName);
@@ -144,7 +145,7 @@ export default function InventoryScreen() {
 
   return (
     <View style={InventoryScreenCss.container}>
-      <ScrollView style={{ flex: 1, padding: 10}}>
+      <ScrollView style={{ flex: 1, padding: 10 }}>
         {customer && (
           <Animated.View style={InventoryScreenCss.customerDetailsContainer}>
             <TouchableOpacity onPress={toggleExpand}>
