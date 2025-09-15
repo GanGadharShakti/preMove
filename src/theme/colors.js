@@ -8,4 +8,5 @@ export default {
   muted: '#6B7280',
   card: '#F5F7FA',
   border: '#E5E7EB',
+  bg:'#f2f5f9'
 };

@@ -19,11 +19,13 @@ import ApprovalRequests from "../screens/ManagerScreens/ApprovalRequests";
 import CustomerList from "../screens/ManagerScreens/CustomerInventrory";
 import ManagerProfile from "../screens/ManagerScreens/ManagerProfile.jsx";
 import Reports from "../screens/ManagerScreens/Reports";
+import Header from "../components/Header.jsx";
 
 const Tab = createBottomTabNavigator();
 
 const ManagerBottomTab = () => (
   <View style={{ height: "100%" }}>
+    <Header/>
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,

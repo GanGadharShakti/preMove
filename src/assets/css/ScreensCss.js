@@ -448,6 +448,7 @@ export const AddItemCss = StyleSheet.create({
   },
   icon: {
     marginRight: 8,
+    // fontWeight:'bold'
   },
   input: {
     flex: 1,
